@@ -1,24 +1,24 @@
 const express = require('express');
 const app = express();
 const db = require('./db')
-//const passport = require('./auth')
+const passport = require('./auth')
 
 const PORT =process.env.PORT || 9000;
-//app.use(passport.initialize());
-//const localauthmiddleware = passport.authenticate('local',{session:false})
+app.use(passport.initialize());
+const localauthmiddleware = passport.authenticate('local',{session:false})
 
 const bodyParser = require('body-parser');
 const Instructor = require('./models/Instructor');
 const Student = require('./models/Student');
 const Course = require('./models/Course');
 app.use(bodyParser.json());
-//const login = (req,res,next)=>{
-   // const currentDate = new Date();
-  // console.log(currentDate.toDateString());
-  // next()
-//}
+const login = (req,res,next)=>{
+    const currentDate = new Date();
+   console.log(currentDate.toDateString());
+   next()
+}
 
-app.get('/', function(req, res){
+app.get('/',login, function(req, res){
     res.send("hello world")
 })
 
@@ -118,11 +118,11 @@ app.post('/Student', async(req, res)=>{
     }
     catch (err) {
         console.log("error");
-        res.status(500).json({error:"internal server error"});
+        res.status(n500).json({error:"internal server error"});
     }
 });
 
-app.get('/Student',async (req, res) => {
+app.get('/Student',localauthmiddleware,async (req, res) => {
     try {
         const data = await Student.find();
         console.log("Data fetched");
